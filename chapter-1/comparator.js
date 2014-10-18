@@ -1,17 +1,11 @@
-function exists(x) {
-  return x!= null;
-}
+var h = require('../lib/helpers');
 
-function truthy(x) {
-  return (x !== false) && exists(x);
-}
-
-// comparator is a higher order function because
-// it takes a function and returns a new function
+// "comparator is a higher order function because it takes a function and
+//  returns a new function"
 function comparator(pred) {
   return function(x, y) {
-    if (truthy(pred(x, y))) return -1;
-    else if (truthy(pred(y, x))) return 1;
+    if (h.truthy(pred(x, y))) return -1;
+    else if (h.truthy(pred(y, x))) return 1;
     else return 0;
   }
 }

@@ -52,7 +52,7 @@ function prettyNumber(n) {
 //=> Hello, I am the number 2
 //=> Hello, I am the number 3
 ```
-→ [__pass-the-func.js__](/chapter-1/pass-the-func.js)
+→ [__chapter-1/pass-the-func.js__](/chapter-1/pass-the-func.js)
 
 ### apply/call
 
@@ -70,7 +70,7 @@ addThree([5, 10, 15]);
 console.log(sum);
 //=> 30
 ```
-→ [__apply.js__](/chapter-1/apply.js)
+→ [__chapter-1/apply.js__](/chapter-1/apply.js)
 
 > __[!]__ i forgot that the first argument to ``apply`` (and ``call``) is the value of ``this`` for ``fun``. i also forgot about magical ``arguments`` object. :)
 
@@ -126,9 +126,137 @@ var resultWat = [100, 1, 1, 0, 10, -1, -2, -1].sort(comparator(isEqual));
 console.log(resultWat);
 //=> [ 100, 1, 1, 0, 10, -1, -2, -1 ]
 ```
-→ [__comparator.js__](/chapter-1/comparator.js)
+→ [__chapter-1/comparator.js__](/chapter-1/comparator.js)
 
 > __[!]__ why does passing ``isEqual`` to ``comparator`` result in no sorting? because, ironically, when two numbers are ___not___ equal, comparator will return 0 (since first two comparisons via isEqual return false), thereby signally equality to sort. when two numbers _are_ equal, they will be swapped which is meaningless. hence no change.
+
+### data as abstraction
+
+in a footnote the author mentions that ECMAScript.next is discussing the _possibility_ of support for classes.
+
+this is now a fairly solidified spec for ES6 using the ``class`` keyword.
+
+```javascript
+class Animal {
+  constructor(name) {
+    this.name = name;
+    this.say(name + ' has been born!');
+  }
+
+  say(message) {
+    console.log(message);
+  }
+
+  eat() {
+    this.say('eating right now ...');
+  }
+}
+
+class Cat extends Animal {
+  meow() {
+    this.say('meooow!');
+  }
+}
+
+var cat = new Cat('sebastian');
+cat.eat();
+cat.meow();
+//=> sebastian has been born!
+//=> eating right now ...
+//=> meoow!
+```
+→ [__chapter-1/es6-class.html__](/chapter-1/es6-class.html)
+
+at this point author seems to assume familiarity with underscore, using ``_.reduce``, ``_.map`` and ``_.rest`` in example code without explanation. :/
+
+in any case, tinkering with the implementation of ``lameCSV``:  
+```javascript
+function lameCSV(str) {
+  var rows = str.split('\n');
+
+  return _.reduce(rows, function(table, row) {
+    var cols = row.split(',');
+
+    table.push(_.map(cols, function(c) {
+      return c.trim();
+    }));
+
+    return table;
+  }, []);
+}
+
+var frameworks = 'framework, language, age\n ' +
+                 'rails, ruby, 10\n' +
+                 'node.js, javascript, 5\n' +
+                 'phoenix, elixir, 1';
+
+var table = lameCSV(frameworks);
+console.log(table);
+//=> [ [ 'framework', 'language', 'age' ],
+//=>   [ 'rails', 'ruby', '10' ],
+//=>   [ 'node.js', 'javascript', '5' ],
+//=>   [ 'phoenix', 'elixir', '1' ] ]
+
+var sorted = _.rest(table).sort();
+console.log(sorted);
+//=> [ [ 'node.js', 'javascript', '5' ],
+//=>   [ 'phoenix', 'elixir', '1' ],
+//=>   [ 'rails', 'ruby', '10' ] ]
+```
+→ [__lame-csv.js__](/chapter-1/lame-csv.js)
+
+> __[?]__ _wait_, how did javascript sort that last array of arrays?
+
+well, according to [Array.prototype.sort()](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Array/sort):
+> elements are sorted by converting them to strings and comparing
+
+```javascript
+['node.js', 'javascript', '5'].toString();
+//=> "node.js,javascript,5"
+```
+
+> __[!]__ again, the idea of passing functions to functions, while basic to javascript, is still not the most intuitive approach for my brain.
+
+for example, it took me a minute to unpack this:
+
+```javascript
+function selectFrameworks(table) {
+  return _.rest(_.map(table, _.first));
+}
+
+console.log(selectFrameworks(table));
+//=> [ 'rails', 'node.js', 'phoenix' ]
+```
+
+intuitively, i may have written this function as:
+```javascript
+function selectFrameworks(table) {
+  var firstCol = _.map(table, function(row) {
+    return _.first(row);
+  });
+  return _.rest(firstCol);
+}
+```
+
+in ruby collection methods are usually on the objects themselves, so it feels more intuitive:
+```ruby
+# ruby
+table.drop(1).map(&:first)
+```
+
+vs.
+```javascript
+// javascript
+_.rest(_.map(table, _.first));
+```
+
+> __[!]__ _wow_, this is so basic, but i rarely consider that core prototype functions are all accessible as __strings__ in bracket notation, e.g.:
+
+```javascript
+arr = [1, 2, 3];
+arr['reverse'];
+//=> function reverse() { [native code] }
+```
 
 ---
 
