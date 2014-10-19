@@ -6,6 +6,7 @@ Notes and code snippets while studying [Functional JavaScript](http://www.amazon
 ### Contents:
 - [Preface](#preface)
 - [Chapter 1](#chapter-1)
+- [Chapter 2](#chapter-2)
 
 # Preface
 
@@ -203,7 +204,7 @@ console.log(sorted);
 //=>   [ 'phoenix', 'elixir', '1' ],
 //=>   [ 'rails', 'ruby', '10' ] ]
 ```
-→ [__lame-csv.js__](/chapter-1/lame-csv.js)
+→ [__chapter-1/lame-csv.js__](/chapter-1/lame-csv.js)
 
 > __[?]__ _wait_, how did javascript sort that last array of arrays?
 
@@ -257,6 +258,108 @@ arr = [1, 2, 3];
 arr['reverse'];
 //=> function reverse() { [native code] }
 ```
+
+# Chapter 2
+
+### functions as first-class things
+
+> a functional programming language is [at minimum] one facilitating the the use and creation of first-class functions.
+
+> the term "first-class" means that something is just a value. a first-class function is one that can go anywhere that any other value can go.
+
+```javascript
+var f = function() { return 42; }
+var f = [function() { return 42; }];
+var f = { fun: function() { return 42; }}
+42 + (function() { return 42; })();
+//=> 84
+```
+
+> a "higher-order" function can:
+- take a function as an argument
+- return a function as a result
+
+```javascript
+// take a function as argument
+function weirdAdd(n, f) {
+  return n + f();
+}
+weirdAdd(42, function() { return 42; });
+//=> 84
+
+// return a function as result
+function weirdLogger() {
+  return function(message) {
+    console.log('weird!', message);
+  }
+}
+var logger = weirdLogger();
+logger('is this thing on?');
+//=> weird! is this thing on?
+```
+→ [__chapter-2/weird-logger.js__](/chapter-2/weird-logger.js)
+
+### javascript paradigms
+- functional programming
+- imperative programming
+- prototype-based object-oriented programming
+- metaprogramming
+
+> __[!]__ ___chaining ftw!___
+
+> [__Chaining__]((http://underscorejs.org/#chaining)  
+You can use Underscore in either an object-oriented or a functional style, depending on your preference. The following two lines of code are identical ways to double a list of numbers.
+```javascript
+_.map([1, 2, 3], function(n){ return n * 2; });
+_([1, 2, 3]).map(function(n){ return n * 2; });
+```
+> [__chain_.chain(obj)__](http://underscorejs.org/#chain)  
+Returns a wrapped object. Calling methods on this object will continue to return wrapped objects until value is called.
+
+my implemention of lyricSegment:
+```javascript
+function pluralizer(singular, plural) {
+  return function(word, count) {
+    return (count === 1) ? singular : plural;
+  }
+}
+
+function lyricSegment(n) {
+  var bottles = function(count) {
+    if (count > 0) {
+      return count + ' ' + pluralizer('bottle', 'bottles')(count);
+    } else {
+      return 'No more bottles';
+    }
+  }
+
+  return _.chain([])
+          .push(bottles(n) + ' of beer on the wall')
+          .push(bottles(n) + ' of beer')
+          .push('Take one down, pass it around')
+          .push(bottles(n - 1) + ' of beer on the wall')
+          .value();
+}
+
+console.log(lyricSegment(5));
+//=> [ '5 bottles of beer on the wall',
+//=>   '5 bottles of beer',
+//=>   'Take one down, pass it around',
+//=>   '4 bottles of beer on the wall' ]
+
+console.log(lyricSegment(1));
+//=> [ '1 bottles of beer on the wall',
+//=>   '1 bottles of beer',
+//=>   'Take one down, pass it around',
+//=>   'No more bottles of beer on the wall' ]
+```
+→ [__chapter-2/99-bottles.js__](/chapter-2/99-bottles.js)
+
+> __functions__ vs __methods?__  
+keep in mind that when I use the word "function" I mean a function that exists on its own and when I use "method" I mean a function created in the context of an object.
+
+> __metaprogramming__  
+programming occurs when you write code to do something and metaprogramming occurs when you write code that changes the way that something is interpreted.
 
 ---
 
