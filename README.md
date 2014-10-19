@@ -307,7 +307,7 @@ logger('is this thing on?');
 
 > __[!]__ ___chaining ftw!___
 
-> [__Chaining__]((http://underscorejs.org/#chaining)  
+> [__Chaining__](http://underscorejs.org/#chaining)  
 You can use Underscore in either an object-oriented or a functional style, depending on your preference. The following two lines of code are identical ways to double a list of numbers.
 ```javascript
 _.map([1, 2, 3], function(n){ return n * 2; });
@@ -319,8 +319,9 @@ Returns a wrapped object. Calling methods on this object will continue to return
 my implemention of lyricSegment:
 ```javascript
 function pluralizer(singular, plural) {
-  return function(word, count) {
-    return (count === 1) ? singular : plural;
+  return function(count) {
+    count = Math.abs(count);
+    return (count == 0 || count > 1) ? plural : singular;
   }
 }
 
@@ -348,8 +349,8 @@ console.log(lyricSegment(5));
 //=>   '4 bottles of beer on the wall' ]
 
 console.log(lyricSegment(1));
-//=> [ '1 bottles of beer on the wall',
-//=>   '1 bottles of beer',
+//=> [ '1 bottle of beer on the wall',
+//=>   '1 bottle of beer',
 //=>   'Take one down, pass it around',
 //=>   'No more bottles of beer on the wall' ]
 ```

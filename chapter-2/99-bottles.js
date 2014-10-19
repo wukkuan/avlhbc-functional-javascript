@@ -6,10 +6,18 @@ function pluralize(word, count) {
 }
 
 function pluralizer(singular, plural) {
-  return function(word, count) {
-    return (count === 1) ? singular : plural;
+  return function(count) {
+    count = Math.abs(count);
+    return (count == 0 || count > 1) ? plural : singular;
   }
 }
+
+var cats = pluralizer('cat', 'cats');
+console.log(cats(1));   //=> cat
+console.log(cats(-1));  //=> cat
+console.log(cats(5));   //=> cats
+console.log(cats(0));   //=> cats
+console.log(cats(-3));  //=> cats
 
 function lyricSegment(n) {
   var bottles = function(count) {
@@ -35,8 +43,8 @@ console.log(lyricSegment(5));
 //=>   '4 bottles of beer on the wall' ]
 
 console.log(lyricSegment(1));
-//=> [ '1 bottles of beer on the wall',
-//=>   '1 bottles of beer',
+//=> [ '1 bottle of beer on the wall',
+//=>   '1 bottle of beer',
 //=>   'Take one down, pass it around',
 //=>   'No more bottles of beer on the wall' ]
 
@@ -55,8 +63,8 @@ console.log(lyrics);
 //=>   '2 bottles of beer on the wall',
 //=>   '2 bottles of beer',
 //=>   'Take one down, pass it around',
-//=>   '1 bottles of beer on the wall',
-//=>   '1 bottles of beer on the wall',
-//=>   '1 bottles of beer',
+//=>   '1 bottle of beer on the wall',
+//=>   '1 bottle of beer on the wall',
+//=>   '1 bottle of beer',
 //=>   'Take one down, pass it around',
 //=>   'No more bottles of beer on the wall' ]
