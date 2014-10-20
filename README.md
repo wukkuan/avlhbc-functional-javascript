@@ -356,11 +356,71 @@ console.log(lyricSegment(1));
 ```
 → [__chapter-2/99-bottles.js__](/chapter-2/99-bottles.js)
 
-> __functions__ vs __methods?__  
-keep in mind that when I use the word "function" I mean a function that exists on its own and when I use "method" I mean a function created in the context of an object.
+> __functions__ vs __methods:__  keep in mind that when I use the word __"function"__ I mean a function that exists on its own and when I use __"method"__ I mean a function created in the context of an object.
 
-> __metaprogramming__  
-programming occurs when you write code to do something and metaprogramming occurs when you write code that changes the way that something is interpreted.
+> ___metaprogramming:___ programming occurs when you write code to do something and metaprogramming occurs when you write code that changes the way that something is interpreted.
+
+> __applicative programming:__ is defined as the calling by ``function b`` of a ``function a``, supplied as an argument to ``function b`` originally.
+
+> __collection-centric programming:__ functions built to operate on collections.
+
+```javascript
+// function a
+function double(n) { return n * 2; }
+
+// function b
+_.map([1, 2, 3], double);
+```
+→ [__chapter-2/double.js__](/chapter-2/double.js)
+
+### reduceRight
+
+> __[?]__ why is this an examle of ``reduceRight``, it doesn't seem to be required?
+
+```javascript
+function allOfReduceRight() {
+  if (_.isEmpty(arguments)) return true;
+  return _.reduceRight(arguments, function(truth, f) {
+    return truth && f();
+  }, true);
+}
+
+function allOfReduce() {
+  if (_.isEmpty(arguments)) return true;
+  return _.reduce(arguments, function(truth, f) {
+    return truth && f();
+  }, true);
+}
+
+function T() { return true; }
+function F() { return false; }
+
+console.log(allOfReduceRight());
+console.log(allOfReduceRight(T, T));
+console.log(allOfReduceRight(T, T, T, T, F));
+//=> true
+//=> true
+//=> false
+
+console.log(allOfReduce());
+console.log(allOfReduce(T, T));
+console.log(allOfReduce(T, T, T, T, F));
+//=> true
+//=> true
+//=> false
+```
+→ [__chapter-2/reduce-right.js__](/chapter-2/reduce-right.js)
+
+### find
+
+how about a lazy version of ``anyOf`` that uses find?
+
+```javascript
+function anyOf() {
+  return h.exists(_.find(arguments, h.truthy));
+}
+```
+→ [__chapter-2/any-of.js__](/chapter-2/any-of.js)
 
 ---
 
